@@ -27,27 +27,17 @@ export async function logout() {
 export async function getCurrentUser() {
   try {
     console.log('Fetching current user...');
-    const res = await fetch('/api/auth/me', { 
-      credentials: 'include',
-      headers: {
-        'Cache-Control': 'no-cache',
-      } 
-    });
-    
-    if (!res.ok) {
-      if (res.status === 401) {
-        console.log('User not authenticated');
-        return null;
-      }
-      const errorText = await res.text();
-      console.error(`Failed to fetch current user: ${res.status} - ${errorText}`);
-      throw new Error(`Failed to fetch current user: ${res.status} - ${errorText}`);
-    }
-    
+    // Use the apiRequest function which properly handles credentials
+    const res = await apiRequest('GET', '/api/auth/me');
     const data = await res.json();
     console.log('Current user data:', data);
     return data;
   } catch (error) {
+    // This is expected for unauthenticated users
+    if (error instanceof Error && error.message.includes('401')) {
+      console.log('User not authenticated');
+      return null;
+    }
     console.error('getCurrentUser error:', error);
     return null;
   }

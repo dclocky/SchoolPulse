@@ -88,6 +88,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: `Welcome back, ${data.user.firstName}!`,
         });
         
+        // Force navigation based on role
+        if (data.user.role === 'admin') {
+          console.log('Redirecting to admin dashboard');
+          navigate('/admin/dashboard');
+        } else if (data.user.role === 'teacher') {
+          console.log('Redirecting to teacher dashboard');
+          navigate('/teacher/dashboard');
+        }
+        
         return true;
       }
       
