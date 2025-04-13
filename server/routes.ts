@@ -95,6 +95,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post('/api/auth/login', (req, res, next) => {
     console.log('Login attempt with:', req.body);
+    
+    if (!req.body.email || !req.body.password) {
+      console.error('Missing credentials in login request');
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+    
     passport.authenticate('local', (err, user, info) => {
       if (err) { 
         console.error('Login error:', err);
@@ -104,12 +110,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Login failed, info:', info);
         return res.status(401).json({ message: info?.message || 'Authentication failed' }); 
       }
+      
       req.login(user, (err) => {
         if (err) { 
           console.error('Login session error:', err);
           return next(err); 
         }
+        
+        // Verify the session is set up correctly
         console.log('Login successful for user:', user.email);
+        console.log('Session setup:', {
+          hasSession: !!req.session,
+          sessionID: req.sessionID,
+          userSet: !!req.session.passport,
+          isAuthenticated: req.isAuthenticated()
+        });
+        
         return res.json({ user });
       });
     })(req, res, next);

@@ -12,13 +12,27 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  console.log(`Making ${method} request to ${url}`, data ? 'with data' : 'without data');
+  
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: data ? { 
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache"
+    } : {
+      "Cache-Control": "no-cache"
+    },
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
 
+  // Special handling for login
+  if (url === '/api/auth/login' && res.ok) {
+    console.log('Login response ok, returning without throwing');
+    return res;
+  }
+  
+  // Throw for non-ok responses
   await throwIfResNotOk(res);
   return res;
 }
