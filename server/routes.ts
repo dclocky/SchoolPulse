@@ -64,9 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     secret: 'eduschedulesecret', // In production, use a proper secret
     resave: false,
     saveUninitialized: false,
-    store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
-    }),
+    store: storage.sessionStore,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
