@@ -55,6 +55,15 @@ function Router() {
             )}
           </Route>
           
+          {/* Alternative path for login for flexibility */}
+          <Route path="/auth">
+            {isAuthenticated ? (
+              <Redirect to={user?.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard'} />
+            ) : (
+              <Login />
+            )}
+          </Route>
+          
           {/* Admin Routes */}
           <Route path="/admin/dashboard">
             <PrivateRoute component={AdminDashboard} adminOnly={true} />

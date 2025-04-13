@@ -3,8 +3,11 @@ import { apiRequest } from "./queryClient";
 // Auth related API calls
 export async function login(email: string, password: string) {
   try {
+    console.log('Sending login request to server with email:', email);
     const res = await apiRequest('POST', '/api/auth/login', { email, password });
-    return await res.json();
+    const data = await res.json();
+    console.log('Server login response:', data);
+    return data;
   } catch (error) {
     console.error('Login request failed:', error);
     throw error;

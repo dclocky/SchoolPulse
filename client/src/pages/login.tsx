@@ -61,8 +61,8 @@ export default function Login() {
       console.log('Login result:', success);
       
       if (success) {
-        // Login successful, navigate will happen through the AuthProvider's effect
         console.log('Login successful via form submit');
+        // Don't need to navigate here, the AuthContext useEffect will handle it
       } else {
         console.log('Login failed in form submit handler');
       }
