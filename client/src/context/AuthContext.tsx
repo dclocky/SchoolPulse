@@ -44,11 +44,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const checkAuth = async () => {
       try {
         console.log('Checking auth status...');
-        const data = await getCurrentUser();
-        console.log('Auth check result:', data);
-        if (data?.user) {
-          console.log('User is authenticated:', data.user);
-          setUser(data.user);
+        const userData = await getCurrentUser();
+        console.log('Auth check result:', userData);
+        if (userData) {
+          console.log('User is authenticated:', userData);
+          setUser(userData);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -79,20 +79,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('Login response:', data);
       
       if (data?.user) {
-        console.log('Login successful, user data:', data.user);
-        setUser(data.user);
+        const userData = data.user;
+        console.log('Login successful, user data:', userData);
+        setUser(userData);
         
         // Show success toast
         toast({
           title: "Login successful",
-          description: `Welcome back, ${data.user.firstName}!`,
+          description: `Welcome back, ${userData.firstName}!`,
         });
         
         // Force navigation based on role
-        if (data.user.role === 'admin') {
+        if (userData.role === 'admin') {
           console.log('Redirecting to admin dashboard');
           navigate('/admin/dashboard');
-        } else if (data.user.role === 'teacher') {
+        } else if (userData.role === 'teacher') {
           console.log('Redirecting to teacher dashboard');
           navigate('/teacher/dashboard');
         }
