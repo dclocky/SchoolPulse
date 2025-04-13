@@ -92,8 +92,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Auth routes
-  app.post('/api/auth/login', passport.authenticate('local'), (req, res) => {
-    res.json({ user: req.user });
+  app.post('/api/auth/login', (req, res, next) => {
+    console.log('Login attempt with:', req.body);
+    passport.authenticate('local', (err, user, info) => {
+      if (err) { 
+        console.error('Login error:', err);
+        return next(err); 
+      }
+      if (!user) { 
+        console.log('Login failed, info:', info);
+        return res.status(401).json({ message: info?.message || 'Authentication failed' }); 
+      }
+      req.login(user, (err) => {
+        if (err) { 
+          console.error('Login session error:', err);
+          return next(err); 
+        }
+        console.log('Login successful for user:', user.email);
+        return res.json({ user });
+      });
+    })(req, res, next);
   });
 
   app.post('/api/auth/logout', (req, res) => {
@@ -104,6 +122,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/auth/me', isAuthenticated, (req, res) => {
     res.json({ user: req.user });
+  });
+  
+  // Temporary debug route
+  app.get('/api/debug/users', async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      res.json({ 
+        count: users.length,
+        users: users.map(u => ({ 
+          id: u.id, 
+          email: u.email, 
+          username: u.username, 
+          firstName: u.firstName,
+          lastName: u.lastName,
+          role: u.role
+        }))
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
   });
 
   // User routes
