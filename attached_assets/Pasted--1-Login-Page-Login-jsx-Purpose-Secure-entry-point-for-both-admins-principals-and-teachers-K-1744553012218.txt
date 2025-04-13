@@ -1,0 +1,130 @@
+🔐 1. Login Page (Login.jsx)
+Purpose: Secure entry point for both admins/principals and teachers.
+
+Key Features:
+
+Email/password login
+
+Role-based redirect (admin → admin home, teacher → teacher home)
+
+Forgot password
+
+🏠 2. Admin Home Page (AdminDashboard.jsx)
+Purpose: Principal/admin overview of the daily schedule.
+
+Key Features:
+
+Daily timetable (9am–4pm), rows for teachers, columns for times
+
+Each timeblock shows: class name, subject, room number, or “Free Period”
+
+Click a timeblock to view class details (attendance, class notes)
+
+👨‍🏫 3. Teacher Home Page (TeacherDashboard.jsx)
+Purpose: Teachers’ daily dashboard.
+
+Key Features:
+
+Daily personal timetable
+
+Clickable timeblocks that link to individual class sessions
+
+Countdown timer to semester end
+
+📘 4. Class Details Page (ClassDetails.jsx)
+Purpose: View & manage individual class sessions.
+
+Key Features:
+
+Attendance/roll call
+
+Notes section
+
+Homework previously assigned
+
+Upload/create lesson plan
+
+Assign new homework
+
+Class duration timer (optional UX feature)
+
+👤 5. Teacher Profile Page (TeacherProfile.jsx)
+Purpose: Admin view of teacher details.
+
+Key Features:
+
+List of assigned classes
+
+Subjects taught
+
+Schedule for the week
+
+Button to “Assign Substitute Teacher”
+
+🔄 6. Substitute Assignment Page / Modal (AssignSubstitute.jsx)
+Purpose: Reassign teacher’s classes for a day or period.
+
+Key Features:
+
+Calendar & period selector
+
+Dropdown of available substitute teachers
+
+Reason for substitution (optional)
+
+Updates timetable live
+
+📅 7. Timetable Management Page (TimetableEditor.jsx)
+Purpose: Build or edit the master school timetable.
+
+Key Features:
+
+Drag-and-drop or form-based editor
+
+Assign teachers to classes/subjects/rooms
+
+Save and update timetable live
+
+Conflict warnings (if teachers/classes overlap)
+
+⬆️ 8. Data Import Page (DataUpload.jsx)
+Purpose: Upload class and teacher lists by CSV.
+
+Key Features:
+
+Upload CSV for teachers
+
+Upload CSV for classes/students
+
+Automatic parsing & validation
+
+Mapping columns (e.g. “Room No.”, “Subject”)
+
+⚙️ 9. Settings Page (Settings.jsx)
+Purpose: Manage general platform preferences.
+
+Key Features:
+
+Semester start/end dates
+
+Period times
+
+Admin user management
+
+🧱 Backend Routes/Services (Node.js/Express or similar)
+Each page would be supported by RESTful endpoints such as:
+
+GET /api/timetable/daily
+
+GET /api/class/:id
+
+POST /api/attendance
+
+POST /api/homework
+
+POST /api/teacher/substitute
+
+POST /api/upload/csv
+
+PUT /api/timetable/edit
+
