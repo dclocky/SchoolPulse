@@ -41,6 +41,14 @@ const PrivateRoute = ({ component: Component, adminOnly = false, ...rest }: any)
 
 function Router() {
   const { user, isAuthenticated } = useAuth();
+  const [location] = useLocation();
+  
+  // Redirect to appropriate dashboard from root path
+  React.useEffect(() => {
+    if (isAuthenticated && location === "/") {
+      window.location.href = user?.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard';
+    }
+  }, [isAuthenticated, location, user]);
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -95,6 +103,11 @@ function Router() {
             <PrivateRoute component={TeacherProfilePage} />
           </Route>
           
+          {/* Settings routes */}
+          <Route path="/settings">
+            <PrivateRoute component={Settings} adminOnly={true} />
+          </Route>
+
           {/* Home redirect */}
           <Route path="/">
             {isAuthenticated ? (
@@ -105,7 +118,9 @@ function Router() {
           </Route>
           
           {/* Fallback to 404 */}
-          <Route component={NotFound} />
+          <Route path="*">
+            <NotFound />
+          </Route>
         </Switch>
       </div>
     </div>
