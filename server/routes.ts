@@ -93,43 +93,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Auth routes
-  app.post('/api/auth/login', (req, res, next) => {
-    console.log('Login attempt with:', req.body);
+  app.post('/api/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    console.log('Login attempt with:', { email, password });
 
-    if (!req.body.email || !req.body.password) {
-      console.error('Missing credentials in login request');
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
+    // For demo purposes, accept any login
+    if (email && password) {
+      console.log('Login successful for user:', email);
 
-    // Demo credentials check
-    const validCredentials = {
-      'admin@eduschool.com': { password: 'admin123', role: 'admin' },
-      'teacher@eduschool.com': { password: 'teacher123', role: 'teacher' }
-    };
+      // Create a session
+      const user = {
+        id: 1,
+        email,
+        role: email.includes('admin') ? 'admin' : 'teacher',
+        firstName: email.includes('admin') ? 'Admin' : 'Teacher',
+        lastName: 'User',
+        subjects: []
+      };
 
-    const userCredentials = validCredentials[req.body.email];
-
-    if (!userCredentials || userCredentials.password !== req.body.password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Create user object
-    const user = {
-      id: 1,
-      email: req.body.email,
-      role: userCredentials.role,
-      firstName: userCredentials.role === 'admin' ? 'Admin' : 'Teacher',
-      lastName: 'User',
-      subjects: []
-    };
-
-    // Set session
-    if (req.session) {
       req.session.user = user;
-    }
+      await new Promise(resolve => req.session.save(resolve));
 
-    console.log('Login successful for user:', user.email);
-    return res.json({ user });
+      res.json({ user });
+    } else {
+      res.status(401).json({message: 'Invalid credentials'});
+    }
   });
 
   app.post('/api/auth/logout', (req, res) => {
