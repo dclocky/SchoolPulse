@@ -1,151 +1,58 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getCurrentUser, login as loginApi, logout as logoutApi } from '@/lib/auth';
-import { useToast } from '@/hooks/use-toast';
-import { useLocation } from 'wouter';
+import { createContext, useContext, ReactNode } from 'react';
 
-// User type
 interface User {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'admin' | 'teacher';
-  subjects: string[];
+  id: 1,
+  username: 'admin',
+  email: 'admin@eduschool.com',
+  firstName: 'Admin',
+  lastName: 'User',
+  role: 'admin',
+  subjects: ['All']
 }
 
-// Auth context type
 interface AuthContextType {
-  user: User | null;
+  user: User;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
-// Create context
 const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  login: async () => false,
+  user: {
+    id: 1,
+    username: 'admin',
+    email: 'admin@eduschool.com',
+    firstName: 'Admin',
+    lastName: 'User',
+    role: 'admin',
+    subjects: ['All']
+  },
+  isAuthenticated: true,
+  isLoading: false,
+  login: async () => true,
   logout: async () => {},
 });
 
-// Auth provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-  const [, navigate] = useLocation();
-
-  useEffect(() => {
-    // Check if user is already logged in
-    const checkAuth = async () => {
-      try {
-        console.log('Checking auth status...');
-        const userData = await getCurrentUser();
-        console.log('Auth check result:', userData);
-        if (userData) {
-          console.log('User is authenticated:', userData);
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  // Redirect based on role
-  useEffect(() => {
-    if (user && !isLoading) {
-      console.log('Redirecting user based on role:', user.role);
-      if (user.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else if (user.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      }
-    }
-  }, [user, isLoading, navigate]);
-
-  const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      console.log('Attempting login with:', email);
-      const data = await loginApi(email, password);
-      console.log('Login response:', data);
-      
-      if (data?.user) {
-        const userData = data.user;
-        console.log('Login successful, user data:', userData);
-        setUser(userData);
-        
-        // Show success toast
-        toast({
-          title: "Login successful",
-          description: `Welcome back, ${userData.firstName}!`,
-        });
-        
-        // Force navigation based on role
-        if (userData.role === 'admin') {
-          console.log('Redirecting to admin dashboard');
-          navigate('/admin/dashboard');
-        } else if (userData.role === 'teacher') {
-          console.log('Redirecting to teacher dashboard');
-          navigate('/teacher/dashboard');
-        }
-        
-        return true;
-      }
-      
-      console.log('Login failed, no user data returned');
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
-      return false;
-    } catch (error) {
-      console.error("Login error:", error);
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await logoutApi();
-      setUser(null);
-      navigate('/login');
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      });
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast({
-        title: "Logout failed",
-        description: "There was an issue logging you out. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const mockUser = {
+    id: 1,
+    username: 'admin',
+    email: 'admin@eduschool.com',
+    firstName: 'Admin',
+    lastName: 'User',
+    role: 'admin' as const,
+    subjects: ['All']
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout,
+        user: mockUser,
+        isAuthenticated: true,
+        isLoading: false,
+        login: async () => true,
+        logout: async () => {},
       }}
     >
       {children}
@@ -153,5 +60,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook for using auth context
 export const useAuth = () => useContext(AuthContext);

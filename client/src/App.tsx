@@ -40,37 +40,21 @@ const PrivateRoute = ({ component: Component, adminOnly = false, ...rest }: any)
 };
 
 function Router() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [location] = useLocation();
   
-  // Redirect to appropriate dashboard from root path
+  // Always redirect to admin dashboard from root path
   React.useEffect(() => {
-    if (isAuthenticated && location === "/") {
-      window.location.href = user?.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard';
+    if (location === "/") {
+      window.location.href = '/admin/dashboard';
     }
-  }, [isAuthenticated, location, user]);
+  }, [location]);
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {isAuthenticated && <Navbar />}
       <div className="flex-1">
         <Switch>
-          <Route path="/login">
-            {isAuthenticated ? (
-              <Redirect to={user?.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard'} />
-            ) : (
-              <Login />
-            )}
-          </Route>
-          
-          {/* Alternative path for login for flexibility */}
-          <Route path="/auth">
-            {isAuthenticated ? (
-              <Redirect to={user?.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard'} />
-            ) : (
-              <Login />
-            )}
-          </Route>
           
           {/* Admin Routes */}
           <Route path="/admin/dashboard">
