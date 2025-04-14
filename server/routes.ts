@@ -101,6 +101,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: 'Email and password are required' });
     }
     
+    // Demo credentials check
+    const validCredentials = {
+      'admin@eduschool.com': 'admin123',
+      'teacher@eduschool.com': 'teacher123'
+    };
+    
+    if (!validCredentials[req.body.email] || validCredentials[req.body.email] !== req.body.password) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
     passport.authenticate('local', (err, user, info) => {
       if (err) { 
         console.error('Login error:', err);

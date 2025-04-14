@@ -5,7 +5,7 @@ export async function login(email: string, password: string) {
   try {
     console.log('Sending login request to server with email:', email);
     // Direct fetch implementation to avoid any issues with apiRequest
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch('http://0.0.0.0:5000/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
