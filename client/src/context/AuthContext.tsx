@@ -1,13 +1,14 @@
-import { createContext, useContext, ReactNode } from 'react';
+
+import React, { createContext, useContext, ReactNode } from 'react';
 
 interface User {
-  id: 1,
-  username: 'admin',
-  email: 'admin@eduschool.com',
-  firstName: 'Admin',
-  lastName: 'User',
-  role: 'admin',
-  subjects: ['All']
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'teacher';
+  subjects: string[];
 }
 
 interface AuthContextType {
@@ -18,16 +19,18 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+const mockUser = {
+  id: 1,
+  username: 'admin',
+  email: 'admin@eduschool.com',
+  firstName: 'Admin',
+  lastName: 'User',
+  role: 'admin' as const,
+  subjects: ['All']
+};
+
 const AuthContext = createContext<AuthContextType>({
-  user: {
-    id: 1,
-    username: 'admin',
-    email: 'admin@eduschool.com',
-    firstName: 'Admin',
-    lastName: 'User',
-    role: 'admin',
-    subjects: ['All']
-  },
+  user: mockUser,
   isAuthenticated: true,
   isLoading: false,
   login: async () => true,
@@ -35,16 +38,6 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const mockUser = {
-    id: 1,
-    username: 'admin',
-    email: 'admin@eduschool.com',
-    firstName: 'Admin',
-    lastName: 'User',
-    role: 'admin' as const,
-    subjects: ['All']
-  };
-
   return (
     <AuthContext.Provider
       value={{
