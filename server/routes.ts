@@ -97,6 +97,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (req.session) {
       req.session.destroy(() => {
         req.session = null;
+      });
+    }
+    
     console.log('Login attempt with:', req.body);
     
     if (!req.body.email || !req.body.password) {
