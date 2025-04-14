@@ -112,9 +112,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       req.session.user = user;
+      req.session.cookie.maxAge = 24 * 60 * 60 * 1000; // 24 hours
       await new Promise(resolve => req.session.save(resolve));
 
-      res.json({ user });
+      // Set user in passport session
+      req.logIn(user, (err) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.status(500).json({ message: 'Error during login' });
+        }
+        res.json({ user });
+      });
     } else {
       res.status(401).json({message: 'Invalid credentials'});
     }
