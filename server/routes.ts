@@ -130,8 +130,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     console.log('Login successful for user:', user.email);
     return res.json({ user });
-      });
-    })(req, res, next);
   });
 
   app.post('/api/auth/logout', (req, res) => {
