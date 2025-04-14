@@ -1,5 +1,7 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { login as authLogin, logout as authLogout, getCurrentUser } from '@/lib/auth';
+import { useLocation } from 'wouter';
 
 interface User {
   id: number;
@@ -12,40 +14,78 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
-const mockUser = {
-  id: 1,
-  username: 'admin',
-  email: 'admin@eduschool.com',
-  firstName: 'Admin',
-  lastName: 'User',
-  role: 'admin' as const,
-  subjects: ['All']
-};
-
 const AuthContext = createContext<AuthContextType>({
-  user: mockUser,
-  isAuthenticated: true,
-  isLoading: false,
-  login: async () => true,
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  login: async () => false,
   logout: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      console.log('Checking auth status...');
+      const userData = await getCurrentUser();
+      console.log('Auth check result:', userData);
+      setUser(userData);
+    } catch (error) {
+      console.error('Auth check error:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      const data = await authLogin(email, password);
+      if (data?.user) {
+        setUser(data.user);
+        const route = data.user.role === 'admin' ? '/admin/dashboard' : '/teacher/dashboard';
+        navigate(route);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authLogout();
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
-        user: mockUser,
-        isAuthenticated: true,
-        isLoading: false,
-        login: async () => true,
-        logout: async () => {},
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        logout,
       }}
     >
       {children}
