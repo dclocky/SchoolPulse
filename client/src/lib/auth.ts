@@ -4,24 +4,22 @@ import { apiRequest } from "./queryClient";
 export async function login(email: string, password: string) {
   try {
     console.log('Sending login request to server with email:', email);
-    // Direct fetch implementation to avoid any issues with apiRequest
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
       },
       credentials: 'include',
       body: JSON.stringify({ email, password })
     });
     
+    const data = await res.json();
+    
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error(`Login failed: ${res.status} - ${errorText}`);
-      throw new Error(errorText || 'Login failed');
+      console.error('Login failed:', data.message);
+      return false;
     }
     
-    const data = await res.json();
     console.log('Server login response:', data);
     return data;
   } catch (error) {

@@ -93,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Auth routes
-  app.post('/api/auth/login', (req, res, next) => {
+  app.post('/api/auth/login', (req, res) => {
     console.log('Login attempt with:', req.body);
     
     if (!req.body.email || !req.body.password) {
@@ -103,40 +103,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Demo credentials check
     const validCredentials = {
-      'admin@eduschool.com': 'admin123',
-      'teacher@eduschool.com': 'teacher123'
+      'admin@eduschool.com': { password: 'admin123', role: 'admin' },
+      'teacher@eduschool.com': { password: 'teacher123', role: 'teacher' }
     };
     
-    if (!validCredentials[req.body.email] || validCredentials[req.body.email] !== req.body.password) {
+    const userCredentials = validCredentials[req.body.email];
+    
+    if (!userCredentials || userCredentials.password !== req.body.password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
-    passport.authenticate('local', (err, user, info) => {
-      if (err) { 
-        console.error('Login error:', err);
-        return next(err); 
-      }
-      if (!user) { 
-        console.log('Login failed, info:', info);
-        return res.status(401).json({ message: info?.message || 'Authentication failed' }); 
-      }
-      
-      req.login(user, (err) => {
-        if (err) { 
-          console.error('Login session error:', err);
-          return next(err); 
-        }
-        
-        // Verify the session is set up correctly
-        console.log('Login successful for user:', user.email);
-        console.log('Session setup:', {
-          hasSession: !!req.session,
-          sessionID: req.sessionID,
-          userSet: !!req.session.passport,
-          isAuthenticated: req.isAuthenticated()
-        });
-        
-        return res.json({ user });
+    // Create user object
+    const user = {
+      id: 1,
+      email: req.body.email,
+      role: userCredentials.role,
+      firstName: userCredentials.role === 'admin' ? 'Admin' : 'Teacher',
+      lastName: 'User',
+      subjects: []
+    };
+    
+    // Set session
+    if (req.session) {
+      req.session.user = user;
+    }
+    
+    console.log('Login successful for user:', user.email);
+    return res.json({ user });
       });
     })(req, res, next);
   });
