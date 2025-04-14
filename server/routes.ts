@@ -95,24 +95,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post('/api/auth/login', (req, res, next) => {
     console.log('Login attempt with:', req.body);
-    
+
     if (!req.body.email || !req.body.password) {
       console.error('Missing credentials in login request');
       return res.status(400).json({ message: 'Email and password are required' });
     }
-    
+
     // Demo credentials check
     const validCredentials = {
       'admin@eduschool.com': { password: 'admin123', role: 'admin' },
       'teacher@eduschool.com': { password: 'teacher123', role: 'teacher' }
     };
-    
+
     const userCredentials = validCredentials[req.body.email];
-    
+
     if (!userCredentials || userCredentials.password !== req.body.password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    
+
     // Create user object
     const user = {
       id: 1,
@@ -122,12 +122,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       lastName: 'User',
       subjects: []
     };
-    
+
     // Set session
     if (req.session) {
       req.session.user = user;
     }
-    
+
     console.log('Login successful for user:', user.email);
     return res.json({ user });
   });
@@ -141,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/me', isAuthenticated, (req, res) => {
     res.json({ user: req.user });
   });
-  
+
   // Temporary debug route
   app.get('/api/debug/users', async (req, res) => {
     try {
