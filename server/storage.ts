@@ -1,13 +1,11 @@
 import { IStorage } from './database-storage';
 import { DatabaseStorage } from './database-storage';
+import { db } from './db';
+import session from 'express-session';
+import { MemoryStore } from 'memorystore';
 
-// Initialize storage
-export const storage = new DatabaseStorage({
-  connection,
-  sessionStore: new MemoryStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  })
-});
+// Export the database storage instance
+export const storage = new DatabaseStorage();
 
 // Initialize sample data
 async function initializeSampleData() {
