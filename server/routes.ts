@@ -62,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session
   app.use(session({
     secret: 'eduschedulesecret', // In production, use a proper secret
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     store: storage.sessionStore,
     cookie: {

@@ -64,9 +64,33 @@ async function initializeSampleData() {
     const existingTeachers = await storage.getTeachers();
     if (existingTeachers.length === 0) {
       const teachers = [
-        { username: 'jsmith', password: 'teacher123', email: 'john.smith@school.com', firstName: 'John', lastName: 'Smith', role: 'teacher', subjects: ['Mathematics', 'Physics'] },
-        { username: 'mjohnson', password: 'teacher123', email: 'mary.johnson@school.com', firstName: 'Mary', lastName: 'Johnson', role: 'teacher', subjects: ['English', 'History'] },
-        { username: 'rparker', password: 'teacher123', email: 'robert.parker@school.com', firstName: 'Robert', lastName: 'Parker', role: 'teacher', subjects: ['Science', 'Geography'] }
+        {
+          username: 'jsmith',
+          password: 'teacher123',
+          email: 'john.smith@school.com',
+          firstName: 'John',
+          lastName: 'Smith',
+          role: 'teacher',
+          subjects: ['Mathematics', 'Physics']
+        },
+        {
+          username: 'mjohnson',
+          password: 'teacher123',
+          email: 'mary.johnson@school.com',
+          firstName: 'Mary',
+          lastName: 'Johnson',
+          role: 'teacher',
+          subjects: ['English', 'History']
+        },
+        {
+          username: 'rparker',
+          password: 'teacher123',
+          email: 'robert.parker@school.com',
+          firstName: 'Robert',
+          lastName: 'Parker',
+          role: 'teacher',
+          subjects: ['Science', 'Geography']
+        }
       ];
 
       for (const teacher of teachers) {
@@ -83,11 +107,10 @@ async function initializeSampleData() {
     // Create sample timetable entries if they don't exist
     const existingEntries = await storage.getTimetableEntries();
     if (existingEntries.length === 0) {
-      // Create a week's worth of timetable entries for each teacher
-      for (let day = 1; day <= 5; day++) { // Monday to Friday
+      for (let day = 1; day <= 5; day++) {
         for (const teacher of teachers) {
           for (let period = 0; period < 6; period++) {
-            const isFreePeriod = Math.random() > 0.8; // 20% chance of free period
+            const isFreePeriod = Math.random() > 0.8;
             if (!isFreePeriod) {
               const entry = {
                 teacherId: teacher.id,
@@ -115,21 +138,20 @@ async function initializeSampleData() {
             firstName: `Student${i}`,
             lastName: `Class${cls.grade}${cls.section}`,
             email: `student${i}.${cls.grade}${cls.section}@school.com`,
-            classId: cls.id
+            classId: cls.id,
+            username: `student${i}_${cls.grade}${cls.section}`,
+            password: 'student123',
+            role: 'student'
           };
-          await storage.createStudent(student);
+          await storage.createUser(student);
         }
       }
     }
 
-    console.log('Sample data initialized successfully');
+    console.log('Sample data initialization completed.');
   } catch (error) {
     console.error('Error initializing sample data:', error);
   }
 }
 
-// Call initialization
-initializeSampleData().catch(console.error);
-
-// Re-export the IStorage interface
-export type { IStorage };
+initializeSampleData();

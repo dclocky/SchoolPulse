@@ -136,17 +136,31 @@ export class DatabaseStorage implements IStorage {
       }
       
       // Check if teacher exists
-      const teacherExists = await this.getUserByEmail('teacher@eduschool.com');
+      const teacherExists = await this.getUserByEmail('janice.doe@eduschool.com');
       if (!teacherExists) {
         // Add default teacher
         const teacher: InsertUser = {
           username: 'teacher',
           password: 'teacher123', // In a real app, this would be hashed
-          email: 'teacher@eduschool.com',
-          firstName: 'Jane',
+          email: 'janice.doe@eduschool.com',
+          firstName: 'Janice',
           lastName: 'Doe',
           role: 'teacher',
-          subjects: ['English', 'Literature']
+          subjects: ['English', 'Literature','History']
+        };
+        await this.createUser(teacher);
+      }
+      this.getUserByEmail('john.smith@eduschool.com');
+      if (!teacherExists) {
+        // Add default teacher
+        const teacher: InsertUser = {
+          username: 'john.smith@eduschool.com',
+          password: 'teacher123', // In a real app, this would be hashed
+          email: 'john.smith@eduschool.com',
+          firstName: 'John',
+          lastName: 'Smith',
+          role: 'teacher',
+          subjects: ['History', 'Maths']
         };
         await this.createUser(teacher);
       }

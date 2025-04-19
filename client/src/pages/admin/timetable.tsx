@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "wouter";
+import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { 
   CalendarDays, 
@@ -39,7 +41,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
+const fetcher = (url) => fetch(url).then((res) => res.json());
 // Schema for timetable entry form
 const timetableEntrySchema = z.object({
   teacherId: z.string().min(1, { message: "Teacher is required" }),
@@ -52,6 +54,7 @@ const timetableEntrySchema = z.object({
 });
 
 export default function Timetable() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [selectedDay, setSelectedDay] = useState("1"); // Monday
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null);
@@ -60,24 +63,20 @@ export default function Timetable() {
 
   // Fetch data
   const { data: teachers, isLoading: loadingTeachers } = useQuery({
-    queryKey: ['/api/teachers'],
-  });
+    queryKey: ['/api/teachers'],queryFn: () => fetcher('/api/teachers') });
 
   const { data: classes, isLoading: loadingClasses } = useQuery({
-    queryKey: ['/api/classes'],
-  });
+    queryKey: ['/api/classes'],queryFn: () => fetcher('/api/classes') });
+
 
   const { data: subjects, isLoading: loadingSubjects } = useQuery({
-    queryKey: ['/api/subjects'],
-  });
+    queryKey: ['/api/subjects'],queryFn: () => fetcher('/api/subjects') });
 
   const { data: timeSlots, isLoading: loadingTimeSlots } = useQuery({
-    queryKey: ['/api/timeslots'],
-  });
+    queryKey: ['/api/timeslots'],queryFn: () => fetcher('/api/timeslots') });
 
   const { data: timetableEntries, isLoading: loadingTimetable } = useQuery({
-    queryKey: ['/api/timetable'],
-  });
+    queryKey: ['/api/timetable'],queryFn: () => fetcher('/api/timetable') });
 
   const isLoading = loadingTeachers || loadingClasses || loadingSubjects || loadingTimeSlots || loadingTimetable;
 
